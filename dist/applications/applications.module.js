@@ -10,12 +10,17 @@ exports.ApplicationsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const application_entity_1 = require("./entities/application.entity");
+const applications_service_1 = require("./applications.service");
+const applications_controller_1 = require("./applications.controller");
+const position_entity_1 = require("../positions/entities/position.entity");
 let ApplicationsModule = class ApplicationsModule {
 };
 exports.ApplicationsModule = ApplicationsModule;
 exports.ApplicationsModule = ApplicationsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([application_entity_1.Application])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([application_entity_1.Application, position_entity_1.Position])],
+        controllers: [applications_controller_1.ApplicationsController],
+        providers: [applications_service_1.ApplicationsService],
         exports: [typeorm_1.TypeOrmModule],
     })
 ], ApplicationsModule);
