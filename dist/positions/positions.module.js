@@ -10,12 +10,16 @@ exports.PositionsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const position_entity_1 = require("./entities/position.entity");
+const positions_service_1 = require("./positions.service");
+const positions_controller_1 = require("./positions.controller");
 let PositionsModule = class PositionsModule {
 };
 exports.PositionsModule = PositionsModule;
 exports.PositionsModule = PositionsModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([position_entity_1.Position])],
+        controllers: [positions_controller_1.PositionsController],
+        providers: [positions_service_1.PositionsService],
         exports: [typeorm_1.TypeOrmModule],
     })
 ], PositionsModule);
