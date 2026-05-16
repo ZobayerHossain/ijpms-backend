@@ -78,6 +78,7 @@ let AuthService = class AuthService {
     async login(loginDto) {
         const user = await this.userRepository.findOne({
             where: { email: loginDto.email },
+            select: ['id', 'email', 'password', 'role', 'fullName', 'department'],
         });
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
