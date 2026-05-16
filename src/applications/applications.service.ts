@@ -11,6 +11,7 @@ import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateResultDto } from './dto/update-result.dto';
 import { User, UserRole } from '../users/entities/user.entity';
 import { Position } from '../positions/entities/position.entity';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class ApplicationsService {
@@ -19,6 +20,7 @@ export class ApplicationsService {
     private applicationRepository: Repository<Application>,
     @InjectRepository(Position)
     private positionRepository: Repository<Position>,
+    private mailService: MailService,
   ) {}
 
   private calculateTriageLevel(score: number): TriageLevel {
@@ -49,7 +51,22 @@ export class ApplicationsService {
       applicant,
       position,
     });
-    return await this.applicationRepository.save(application);
+
+    const saved = await this.applicationRepository.save(application);
+
+    try {
+      await this.mailService.sendApplicationConfirmation(
+        applicant.email,
+        applicant.fullName,
+        position.title,
+        position.company,
+        new Date().toLocaleDateString(),
+      );
+    } catch (e) {
+      console.log('Mail error:', e.message);
+    }
+
+    return saved;
   }
 
   async getMyApplications(applicant: User) {
@@ -62,7 +79,7 @@ export class ApplicationsService {
   async updateResult(id: string, updateResultDto: UpdateResultDto, recruiter: User) {
     const application = await this.applicationRepository.findOne({
       where: { id },
-      relations: ['position', 'position.recruiter'],
+      relations: ['position', 'position.recruiter', 'applicant'],
     });
     if (!application) {
       throw new NotFoundException('Application not found');
@@ -84,7 +101,23 @@ export class ApplicationsService {
       application.notes = updateResultDto.notes;
     }
 
-    return await this.applicationRepository.save(application);
+    const saved = await this.applicationRepository.save(application);
+
+    try {
+      await this.mailService.sendInterviewResult(
+        application.applicant.email,
+        application.applicant.fullName,
+        application.position.title,
+        application.position.company,
+        updateResultDto.status,
+        updateResultDto.interviewScore,
+        updateResultDto.notes,
+      );
+    } catch (e) {
+      console.log('Mail error:', e.message);
+    }
+
+    return saved;
   }
 
   async getReport(applicantId: string) {

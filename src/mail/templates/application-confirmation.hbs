@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 30px; }
+    .header { background: #2563EB; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 20px 0; }
+    .badge { background: #EFF4FF; color: #2563EB; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: bold; }
+    .footer { color: #888; font-size: 12px; text-align: center; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Application Confirmed! 🎉</h2>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{applicantName}}</strong>,</p>
+      <p>Your application has been successfully submitted!</p>
+      <p>Position: <span class="badge">{{positionTitle}}</span></p>
+      <p>Company: <strong>{{company}}</strong></p>
+      <p>Applied on: {{appliedAt}}</p>
+      <p>We will review your application and get back to you soon.</p>
+      <p>Best of luck! 🚀</p>
+    </div>
+    <div class="footer">
+      <p>IJPMS — Internship & Job Placement Management System</p>
+    </div>
+  </div>
+</body>
+</html>

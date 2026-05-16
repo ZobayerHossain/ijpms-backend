@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 30px; }
+    .header { background: #1B2A4A; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 20px 0; }
+    .badge { padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: bold; }
+    .selected { background: #D1FAE5; color: #065F46; }
+    .rejected { background: #FEE2E2; color: #991B1B; }
+    .waitlisted { background: #FEF3C7; color: #92400E; }
+    .score { font-size: 24px; font-weight: bold; color: #2563EB; }
+    .footer { color: #888; font-size: 12px; text-align: center; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Interview Result Posted 📋</h2>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{applicantName}}</strong>,</p>
+      <p>Your interview result for the following position has been updated:</p>
+      <p>Position: <strong>{{positionTitle}}</strong></p>
+      <p>Company: <strong>{{company}}</strong></p>
+      <p>Result: <span class="badge {{statusClass}}">{{status}}</span></p>
+      {{#if score}}
+      <p>Score: <span class="score">{{score}}/100</span></p>
+      {{/if}}
+      {{#if notes}}
+      <p>Notes: <em>{{notes}}</em></p>
+      {{/if}}
+      {{#if isSelected}}
+      <p>🎉 Congratulations! You have been selected. Our team will contact you shortly.</p>
+      {{else}}
+      <p>Thank you for your interest. Keep applying and never give up! 💪</p>
+      {{/if}}
+    </div>
+    <div class="footer">
+      <p>IJPMS — Internship & Job Placement Management System</p>
+    </div>
+  </div>
+</body>
+</html>
