@@ -28,12 +28,14 @@ export class Application {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { eager: true })
-  @JoinColumn()
+  // Added CASCADE behavior to prevent orphan rows when a user account is deleted
+  @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'applicantId' })
   applicant: User;
 
-  @ManyToOne(() => Position, { eager: true })
-  @JoinColumn()
+  // Added CASCADE behavior to prevent orphan rows when a position post is deleted
+  @ManyToOne(() => Position, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'positionId' })
   position: Position;
 
   @Column({
@@ -55,6 +57,18 @@ export class Application {
 
   @Column({ nullable: true, type: 'text' })
   notes: string;
+
+  // New field to link the candidate's uploaded resume/CV document
+  @Column({ type: 'varchar', nullable: true })
+  resumeUrl: string;
+
+  // New field to track the candidate's development portfolio or GitHub repository link
+  @Column({ type: 'varchar', nullable: true })
+  githubUrl: string;
+
+  // New field to contain screening context or a direct message to recruiters
+  @Column({ type: 'text', nullable: true })
+  coverLetter: string;
 
   @CreateDateColumn()
   appliedAt: Date;

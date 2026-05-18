@@ -47,7 +47,9 @@ export class ApplicationsService {
       throw new ConflictException('You have already applied for this position');
     }
 
+    // Spreading createApplicationDto directly to map resumeUrl, githubUrl, and coverLetter fields seamlessly
     const application = this.applicationRepository.create({
+      ...createApplicationDto,
       applicant,
       position,
     });
