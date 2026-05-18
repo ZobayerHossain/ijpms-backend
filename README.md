@@ -1,98 +1,218 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# IJPMS — Internship & Job Placement Management System API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A secure, RESTful backend API built with NestJS to manage internship and job placement operations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📌 Project Abstraction
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The **Internship & Job Placement Management System (IJPMS)** digitises the end-to-end lifecycle of internship applications — from posting positions and receiving applications to assigning interview results and generating candidate performance reports.
 
-## Project setup
+**Three user roles:**
+- **Applicant** — Browse positions, apply, track applications
+- **Recruiter** — Post positions, review applicants, assign results
+- **Admin** — Full access to manage everything
 
-```bash
-$ npm install
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|---|---|
+| Language | TypeScript |
+| Framework | NestJS 11 |
+| Database | PostgreSQL 16 |
+| ORM | TypeORM |
+| Authentication | JWT + Passport |
+| Password Security | bcryptjs |
+| Email | @nestjs-modules/mailer + Nodemailer |
+| Email Testing | Mailtrap |
+| Templates | Handlebars |
+| Validation | class-validator + class-transformer |
+| Documentation | Swagger UI (@nestjs/swagger) |
+| Version Control | Git + GitHub |
+
+---
+
+## 🗄️ Database Schema
+
+```
+User
+─────────────────────────
+id          UUID (PK)
+fullName    VARCHAR
+email       VARCHAR (unique)
+password    VARCHAR (hashed)
+role        ENUM (applicant/recruiter/admin)
+department  VARCHAR
+createdAt   TIMESTAMP
+updatedAt   TIMESTAMP
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+Position
+─────────────────────────
+id          UUID (PK)
+title       VARCHAR
+company     VARCHAR
+description TEXT
+deadline    DATE
+slots       INTEGER
+recruiterId UUID (FK → User)
+createdAt   TIMESTAMP
+updatedAt   TIMESTAMP
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+Application
+─────────────────────────
+id             UUID (PK)
+applicantId    UUID (FK → User)
+positionId     UUID (FK → Position)
+status         ENUM (pending/selected/rejected/waitlisted)
+triageLevel    ENUM (high/medium/low)
+interviewScore INTEGER
+notes          TEXT
+appliedAt      TIMESTAMP
+updatedAt      TIMESTAMP
 ```
 
-## Deployment
+### Relationships
+- **One-to-Many** — One Recruiter → Many Positions
+- **Many-to-One** — Many Positions ← One Recruiter
+- **Many-to-Many** — Many Applicants ↔ Many Positions (via Application entity)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🔌 API Endpoints
+
+### Auth
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | /auth/register | Register new user | Public |
+| POST | /auth/login | Login, returns JWT | Public |
+| GET | /auth/me | Get current user | JWT |
+
+### Positions
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | /positions | Create position | Recruiter/Admin |
+| GET | /positions | List all positions | JWT |
+| GET | /positions/:id | Get single position | JWT |
+| PATCH | /positions/:id | Update position | Recruiter/Admin |
+| DELETE | /positions/:id | Delete position | Recruiter/Admin |
+
+### Applications
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | /applications | Apply for position | Applicant |
+| GET | /applications/mine | My applications | Applicant |
+| GET | /applications/triage | Triage system | Recruiter/Admin |
+| GET | /applications/report/:id | Performance report | Recruiter/Admin |
+| PATCH | /applications/:id/result | Assign result | Recruiter/Admin |
+| DELETE | /applications/:id | Withdraw application | Applicant/Admin |
+
+### Users
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | /users | List all users | Admin |
+| DELETE | /users/:id | Delete user | Admin |
+
+---
+
+## 📧 Email Notifications
+
+Emails are sent automatically on key actions:
+
+| Trigger | Recipient | Subject |
+|---|---|---|
+| Applicant applies | Applicant | Application Confirmed – [Position] |
+| Recruiter assigns result | Applicant | Interview Result – [Position] |
+
+**Testing:** Mailtrap sandbox (development)
+
+---
+
+## ⚙️ Setup & Run
+
+### Prerequisites
+- Node.js v18+
+- PostgreSQL 16
+- npm
+
+### Installation
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Clone the repo
+git clone https://github.com/ZobayerHossain/ijpms-backend.git
+cd ijpms-backend
+
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+# Fill in your .env values
+
+# Run in development
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Environment Variables (.env.example)
 
-## Resources
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=ijpms_db
 
-Check out a few resources that may come in handy when working with NestJS:
+# JWT
+JWT_SECRET=your_secret_key
+JWT_EXPIRES_IN=7d
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Mail (Mailtrap)
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USER=your_mailtrap_user
+MAIL_PASS=your_mailtrap_pass
+MAIL_FROM=noreply@ijpms.com
 
-## Support
+# App
+PORT=3000
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 📖 API Documentation
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Swagger UI available at:
+[http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
-## License
+## 📬 Email Evidence
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Application Confirmation Email
+![Application Confirmed Email](screenshots/mailtrap-application-confirmed.png)
+
+## 🏗️ Project Structure
+
+```
+src/
+├── auth/               → JWT auth, guards, strategies
+├── users/              → User entity, management
+├── positions/          → Internship positions CRUD
+├── applications/       → Applications, triage, reports
+├── mail/               → Email service + templates
+├── common/
+│   ├── filters/        → Global exception filter
+│   └── interceptors/   → Response interceptor
+├── main.ts             → App bootstrap + Swagger
+└── app.module.ts       → Root module
+```
+
+## 👨‍💻 Author
+
+**(Zobayer Hossain Piash)**
+American International University – Bangladesh (AIUB)
+CSC 4161 – Advanced Programming in Web Technologies
