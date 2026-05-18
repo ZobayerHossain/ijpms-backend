@@ -194,6 +194,7 @@ Swagger UI available at:
 
 ### Application Confirmation Email
 ![Application Confirmed Email](screenshots/mailtrap-application-confirmed.png)
+![Interview Result Email](screenshots/mailtrap-interview-result.png)
 
 ## 🏗️ Project Structure
 
